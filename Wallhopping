@@ -33,7 +33,7 @@ uiStroke.Transparency = 0.6
 uiStroke.Thickness = 1.5
 uiStroke.Parent = frame
 
--- Close button as X (simple red circle with bold X)
+-- Close button as X (FIXED: aspect constraint + centering + smaller size)
 local closeButton = Instance.new("TextButton")
 closeButton.Name = "Close"
 closeButton.Size = UDim2.new(0, 32, 0, 32)
@@ -43,17 +43,25 @@ closeButton.BorderSizePixel = 0
 closeButton.Text = "X"
 closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 closeButton.Font = Enum.Font.GothamBold
-closeButton.TextSize = 24
+closeButton.TextSize = 20  -- Reduced to prevent clipping in circle
+closeButton.TextXAlignment = Enum.TextXAlignment.Center
+closeButton.TextYAlignment = Enum.TextYAlignment.Center
+closeButton.ZIndex = 10
 closeButton.Parent = frame
 
 local closeUICorner = Instance.new("UICorner")
 closeUICorner.CornerRadius = UDim.new(1, 0)  -- full circle
 closeUICorner.Parent = closeButton
 
+-- Force perfect square → fixes text rendering issues with full UICorner
+local aspectConstraint = Instance.new("UIAspectRatioConstraint")
+aspectConstraint.AspectRatio = 1
+aspectConstraint.Parent = closeButton
+
 -- Hover effect
 closeButton.MouseEnter:Connect(function()
     closeButton.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
-    closeButton.Size = UDim2.new(0, 36, 0, 36)  -- slight enlarge
+    closeButton.Size = UDim2.new(0, 36, 0, 36)
     closeButton.Position = UDim2.new(1, -40, 0, 2)
 end)
 
@@ -63,7 +71,7 @@ closeButton.MouseLeave:Connect(function()
     closeButton.Position = UDim2.new(1, -38, 0, 4)
 end)
 
--- Click: delete GUI, keep wallhop on
+-- Click: delete GUI
 closeButton.MouseButton1Click:Connect(function()
     screenGui:Destroy()
 end)
@@ -83,7 +91,7 @@ local titleLabel = Instance.new("TextLabel")
 titleLabel.Size = UDim2.new(1, -50, 1, 0)
 titleLabel.Position = UDim2.new(0, 12, 0, 0)
 titleLabel.BackgroundTransparency = 1
-titleLabel.Text = "Universal Hub — Wallhop V1"
+titleLabel.Text = "Universal Hub — Wallhop V1.01"
 titleLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
 titleLabel.Font = Enum.Font.GothamBold
 titleLabel.TextSize = 16
@@ -218,7 +226,7 @@ task.delay(0.12, function()
     end
 end)
 
--- Wallhop raycast & logic (unchanged, with no-snap in shiftlock)
+-- Wallhop raycast & logic
 local raycastParams = RaycastParams.new()
 raycastParams.FilterType = Enum.RaycastFilterType.Exclude
 
